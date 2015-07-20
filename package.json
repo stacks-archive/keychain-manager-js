@@ -1,0 +1,29 @@
+{
+  "name": "key-manager",
+  "version": "1.0.0",
+  "description": "A device-specific hierarchical deterministic keychain based on ECDSA / bitcoin keypairs.",
+  "main": "index.js",
+  "scripts": {
+    "test": "standard && tape test.js"
+  },
+  "keywords": [
+    "key",
+    "keychain",
+    "bitcoin",
+    "ecdsa",
+    "crypto",
+    "cryptography",
+    "hierarchical",
+    "deterministic",
+    "lockchain"
+  ],
+  "author": "Ryan Shea <ryan@shea.io> (https://twitter.com/ryaneshea)",
+  "license": "MIT",
+  "dependencies": {
+    "bitcore": "^0.12.13",
+    "bitcore-message": "^0.11.1"
+  },
+  "devDependencies": {
+    "tape": "^4.0.1"
+  }
+}
