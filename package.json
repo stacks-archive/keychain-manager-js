@@ -1,7 +1,7 @@
 {
   "name": "key-manager",
   "version": "1.0.0",
-  "description": "A device-specific hierarchical deterministic keychain based on ECDSA / bitcoin keypairs.",
+  "description": "A key system based around accounts/keychains that each have hierarchical deterministic keychains with ECDSA keypairs (the ones Bitcoin uses).",
   "main": "index.js",
   "scripts": {
     "test": "standard && tape test.js"
