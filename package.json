@@ -1,10 +1,14 @@
 {
-  "name": "key-manager",
+  "name": "keychain-box",
   "version": "1.0.0",
   "description": "A key system based around accounts/keychains that each have hierarchical deterministic keychains with ECDSA keypairs (the ones Bitcoin uses).",
   "main": "index.js",
   "scripts": {
     "test": "standard && tape test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/shea256/keychain-box.git"
   },
   "keywords": [
     "key",
@@ -17,7 +21,11 @@
     "deterministic",
     "lockchain"
   ],
-  "author": "Ryan Shea <ryan@shea.io> (https://twitter.com/ryaneshea)",
+  "author": {
+    "name": "Ryan Shea",
+    "email": "ryan@shea.io",
+    "url": "https://twitter.com/ryaneshea"
+  },
   "license": "MIT",
   "dependencies": {
     "bitcore": "^0.12.13",
