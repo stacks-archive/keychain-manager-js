@@ -1,25 +1,33 @@
 'use strict'
 
+var BigNumber = require('bn.js')
+
 var bitcore = require('bitcore')
-var bitcoreMessage = require('bitcore-message')
+var HDPrivateKey = bitcore.HDPrivateKey
+var HDPublicKey = bitcore.HDPublicKey
+var PublicKey = bitcore.PublicKey
+var PrivateKey = bitcore.PrivateKey
+var sha256 = bitcore.crypto.Hash.sha256
+
+var Message = require('bitcore-message')
 
 /* Private Keychain Box */
 
-function KeychainBox(keyString) {
+function Keylocker(keyString) {
     if (keyString) {
-        this.masterKey = new bitcore.HDPrivateKey(keyString)
+        this.masterKey = new HDPrivateKey(keyString)
     } else {
-        this.masterKey = new bitcore.HDPrivateKey()
+        this.masterKey = new HDPrivateKey()
     }
 }
 
-KeychainBox.prototype.getKeychain = function(accountNumber) {
+Keylocker.prototype.getKeychain = function(accountNumber) {
     var keychainMasterKey = this.masterKey.derive(accountNumber, true)
     var keychain = new Keychain(keychainMasterKey.toString(), accountNumber)
     return keychain
 }
 
-KeychainBox.prototype.getLockchain = function(accountNumber) {
+Keylocker.prototype.getLockchain = function(accountNumber) {
     var keychain = this.getKeychain(accountNumber)
     var lockchain = keychain.getLockchain()
     return lockchain
@@ -32,27 +40,33 @@ function Keychain(keyString, accountNumber) {
         this.accountNumber = accountNumber
     }
     if (keyString) {
-        this.masterKey = new bitcore.HDPrivateKey(keyString)
+        this.masterKey = new HDPrivateKey(keyString)
     } else {
         throw "a private key string is required"
     }
 }
 
 Keychain.prototype.getLockchain = function() {
-    var chainMasterLock = this.masterKey.hdPublicKey
-    var lockchain = new Lockchain(chainMasterLock.toString(), this.accountNumber)
+    var chainmasterLock = this.masterKey.hdPublicKey
+    var lockchain = new Lockchain(chainmasterLock.toString(), this.accountNumber)
     return lockchain
 }
 
-Keychain.prototype.getChainPathHash = function(keyName) {
+Keychain.prototype.getChainPathHashBuffer = function(keyName) {
     var chainPathBuffer = new Buffer(this.masterKey.toString() + keyName)
-    var chainPathHashBuffer = bitcore.crypto.Hash.sha256(chainPathBuffer)
+    var chainPathHashBuffer = sha256(chainPathBuffer)
     return chainPathHashBuffer
 }
 
+Keychain.prototype.getChainPathHash = function(keyName) {
+    var chainPathHashBuffer = this.getChainPathHashBuffer(keyName)
+    var chainPathHashHexString = chainPathHashBuffer.toString('hex')
+    return chainPathHashHexString
+}
+
 Keychain.prototype.getKey = function(keyName) {
-    var chainPathHashBuffer = this.getChainPathHash(keyName)
-    var chainPathBigNumber = bitcore.crypto.BN.fromBuffer(chainPathHashBuffer)
+    var chainPathHash = this.getChainPathHash(keyName)
+    var chainPathBigNumber = new BigNumber(chainPathHash, 16)
     
     var key = this.masterKey
     for (var index in chainPathBigNumber.words) {
@@ -65,7 +79,7 @@ Keychain.prototype.getKey = function(keyName) {
 
 Keychain.prototype.signWithKey = function(keyName, message) {
     var key = this.getKey(keyName)
-    var signature = bitcoreMessage(message).sign(key)
+    var signature = Message(message).sign(key)
     return signature
 }
 
@@ -77,15 +91,14 @@ function Lockchain(lockString, accountNumber) {
         this.accountNumber = accountNumber
     }
     if (lockString) {
-        this.masterLock = bitcore.HDPublicKey(lockString)
+        this.masterLock = HDPublicKey(lockString)
     } else {
         throw "a public key string is required"
     }
 }
 
-Lockchain.prototype.getLock = function(chainPathHashHex) {
-    var chainPathHashBuffer = new Buffer(chainPathHashHex, 'hex')
-    var chainPathBigNumber = bitcore.crypto.BN.fromBuffer(chainPathHashBuffer)
+Lockchain.prototype.getLock = function(chainPathHash) {
+    var chainPathBigNumber = new BigNumber(chainPathHash, 16)
 
     var lock = this.masterLock
     for (var index in chainPathBigNumber.words) {
@@ -96,15 +109,19 @@ Lockchain.prototype.getLock = function(chainPathHashHex) {
     return lock
 }
 
-Lockchain.prototype.checkSignature = function(message, signature, chainPathHashHex) {
-    var lock = this.getLock(chainPathHashHex)
+Lockchain.prototype.checkSignature = function(message, signature, chainPathHash) {
+    var lock = this.getLock(chainPathHash)
     var address = lock.toAddress()
-    var messageVerified = bitcoreMessage(message).verify(address, signature)
+    var messageVerified = Message(message).verify(address, signature)
     return messageVerified
 }
 
 module.exports = {
-    KeychainBox: KeychainBox,
+    Keylocker: Keylocker,
     Keychain: Keychain,
-    Lockchain: Lockchain
+    Lockchain: Lockchain,
+    HDPrivateKey: HDPrivateKey,
+    HDPublicKey: HDPublicKey,
+    PrivateKey: PrivateKey,
+    PublicKey: PublicKey
 }

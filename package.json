@@ -1,6 +1,6 @@
 {
-  "name": "keychain-box",
-  "version": "1.0.2",
+  "name": "keylocker",
+  "version": "1.0.0",
   "description": "A key system based around accounts/keychains that each have hierarchical deterministic keychains with ECDSA keypairs (the ones Bitcoin uses).",
   "main": "index.js",
   "scripts": {
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/shea256/keychain-box.git"
+    "url": "https://github.com/shea256/keylocker.git"
   },
   "keywords": [
     "key",
@@ -19,7 +19,8 @@
     "cryptography",
     "hierarchical",
     "deterministic",
-    "lockchain"
+    "lockchain",
+    "keylocker"
   ],
   "author": {
     "name": "Ryan Shea",
@@ -27,10 +28,11 @@
     "url": "https://twitter.com/ryaneshea"
   },
   "license": "MIT",
-  "homepage": "https://github.com/shea256/keychain-box",
+  "homepage": "https://github.com/shea256/keylocker",
   "dependencies": {
     "bitcore": "^0.12.13",
-    "bitcore-message": "^0.11.1"
+    "bitcore-message": "^0.11.1",
+    "bn.js": "^3.1.1"
   },
   "devDependencies": {
     "tape": "^4.0.1"

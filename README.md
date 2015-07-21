@@ -1,31 +1,47 @@
-# keychain-box
+# keylocker
 
-A key system based around accounts/keychains that each have hierarchical deterministic keychains with ECDSA keypairs (the ones Bitcoin uses).
+A key system based around accounts that each have hierarchical deterministic keychains with ECDSA keypairs (the ones Bitcoin uses).
 
-### KeychainBox
+### Keylocker
+
+A keylocker is the highest level abstraction of keys. In a sense, it represents the master private key for the application and/or device. Account-specific keychains can be derived from it, as well as account-specific public keychains or "lockchains."
+
+Note that knowledge of the master key of a keychain derived from the keylocker does not provide knowledge of the master key of the keylocker.
 
 ```js
-var keychainBox = new KeychainBox()
+var keylocker = new Keylocker()
 ```
 
 ### Keychain
 
+A keychain is a collection of private keys with a chain-specific master key or "ancestor" key that helps derive all of the child keys.
+
+A keychain must be derived from a keylocker and cannot be created on it's own.
+
+Note that every private key in the keychain can be traced back to the ancestor key in the chain. That said, with a chain path with enough entropy, it would be intractable to brute-force the path from the child private key to the ancestor private key.
+
 ```js
 var accountNumber = 0,
-    keyname = 'blockstack.org',
+    keyName = 'blockstack.org',
     message = 'Hello, World!'
 
-var keychain = keychainBox.getKeychain(accountNumber)
+var keychain = keylocker.getKeychain(accountNumber)
 var key = keychain.getKey(keyName)
-var chainPathHashHex = keychain.getChainPathHash(keyName).toString('hex')
+var chainPathHash = keychain.getChainPathHash(keyName)
 var signature = keychain.signWithKey(keyName, message)
 ```
 
 ### Lockchain
 
+A lockchain is essentially a public keychain, where each lock in the chain is a public key, and every lock may be unlocked by the corresponding key in the corresponding keychain.
+
+A lockchain may be derived either from the corresponding keychain OR directly from a keylocker.
+
+Note that every lock (public key) in the lockchain can be traced back to the ancestor lock in the chain. But again, if the chain path is random and long enough, it would be intractable to brute-force the path from the child lock (public key) to the ancestor lock (public key).
+
 ```js
 var lockchain = keychain.getLockchain()
-var lockchainFromKeychainBox = keychainBox.getLockchain(accountNumber)
-var lock = lockchain.getLock(chainPathHashHex)
-var verified = lockchain.checkSignature(message, signature, chainPathHashHex)
+var lockchainFromKeylocker = keylocker.getLockchain(accountNumber)
+var lock = lockchain.getLock(chainPathHash)
+var verified = lockchain.checkSignature(message, signature, chainPathHash)
 ```

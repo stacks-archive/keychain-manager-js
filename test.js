@@ -2,16 +2,17 @@
 
 var test = require('tape')
 var index = require('./index')
-var KeychainBox = index.KeychainBox,
+var Keylocker = index.Keylocker,
     Keychain = index.Keychain,
-    Lockchain = index.Lockchain
-var bitcore = require('bitcore')
-var HDPrivateKey = bitcore.HDPrivateKey,
-    HDPublicKey = bitcore.HDPublicKey
+    Lockchain = index.Lockchain,
+    HDPrivateKey = index.HDPrivateKey,
+    HDPublicKey = index.HDPublicKey,
+    PrivateKey = index.PrivateKey,
+    PublicKey = index.PublicKey
 
-/* KeychainBox Tests */
+/* keylocker Tests */
 
-var keychainBox = null,
+var keylocker = null,
     keychain = null,
     lockchain = null,
     accountNumber = 0,
@@ -19,43 +20,42 @@ var keychainBox = null,
     key = null,
     message = 'Hello, World!',
     signature = null,
-    chainPathHashBuffer = null,
-    chainPathHashHex = null,
+    chainPathHash = null,
     lock = null
 
-test('initKeychainBox', function(t) {
+test('initKeylocker', function(t) {
     t.plan(3)
     
-    keychainBox = new KeychainBox()
-    t.ok(keychainBox, 'keychain box created')
-    t.ok(keychainBox.masterKey, 'keychain box master key created')
-    t.ok(keychainBox.masterKey instanceof HDPrivateKey, 'keychain box master key is an HDPrivateKey')
+    keylocker = new Keylocker()
+    t.ok(keylocker, 'keychain box created')
+    t.ok(keylocker.masterKey, 'keychain box master key created')
+    t.ok(keylocker.masterKey instanceof HDPrivateKey, 'keychain box master key is an HDPrivateKey')
 })
 
-test('initKeychainBoxFromSeed', function(t) {
+test('initkeylockerFromSeed', function(t) {
     t.plan(4)
     
     var privateKeyString = 'xprv9s21ZrQH143K4VRgygdbT9byKkWYJ5R73kNvFePJ7Hh7gA1Jic4NV4AnZmYs3fftKRdzMCHEaUFuYg7aApu99RDj9ZfA6KRXniK6r3VYRPV';
-    keychainBox = new KeychainBox(privateKeyString)
-    t.ok(keychainBox, 'keychain box created')
-    t.ok(keychainBox.masterKey, 'keychain box master key created')
-    t.equal(keychainBox.masterKey.toString(), privateKeyString, 'master key equal to master key seed')
-    t.ok(keychainBox.masterKey instanceof HDPrivateKey, 'master key is an HDPrivateKey')
+    keylocker = new Keylocker(privateKeyString)
+    t.ok(keylocker, 'keychain box created')
+    t.ok(keylocker.masterKey, 'keychain box master key created')
+    t.equal(keylocker.masterKey.toString(), privateKeyString, 'master key equal to master key seed')
+    t.ok(keylocker.masterKey instanceof HDPrivateKey, 'master key is an HDPrivateKey')
 })
 
 test('createKeychain', function(t) {
     t.plan(3)
 
-    keychain = keychainBox.getKeychain(accountNumber)
+    keychain = keylocker.getKeychain(accountNumber)
     t.ok(keychain, 'keychain created')
     t.ok(keychain.masterKey, 'keychain master key created')    
     t.ok(keychain.masterKey instanceof HDPrivateKey)
 })
 
-test('createLockchainFromKeychainBox', function(t) {
+test('createLockchainFromkeylocker', function(t) {
     t.plan(3)
 
-    lockchain = keychainBox.getLockchain(accountNumber)
+    lockchain = keylocker.getLockchain(accountNumber)
     t.ok(lockchain, 'lockchain created')
     t.ok(lockchain.masterLock, 'lockchain master lock created')
     t.ok(lockchain.masterLock instanceof HDPublicKey, 'lockchain master lock is an HDPublicKey')
@@ -77,11 +77,10 @@ test('createLockchainFromKeychain', function(t) {
 test('getChainPathHash', function(t) {
     t.plan(2)
 
-    chainPathHashBuffer = keychain.getChainPathHash(keyName)
-    chainPathHashHex = chainPathHashBuffer.toString('hex')
+    chainPathHash = keychain.getChainPathHash(keyName)
 
-    t.ok(chainPathHashBuffer, 'chain path hash created')
-    t.ok(typeof chainPathHashHex === 'string', 'chain path hash is a string')
+    t.ok(chainPathHash, 'chain path hash created')
+    t.ok(typeof chainPathHash === 'string', 'chain path hash is a string')
 })
 
 test('getKey', function(t) {
@@ -89,7 +88,7 @@ test('getKey', function(t) {
 
     key = keychain.getKey(keyName)
     t.ok(key, 'key acquired')
-    t.ok(key instanceof bitcore.PrivateKey, 'key is a PrivateKey object')
+    t.ok(key instanceof PrivateKey, 'key is a PrivateKey object')
     t.ok(key.toString(), 'key can be converted to a string')
 })
 
@@ -107,15 +106,15 @@ test('signWithKey', function(t) {
 test('getLockFromLockchain', function(t) {
     t.plan(2)
 
-    lock = lockchain.getLock(chainPathHashHex)
+    lock = lockchain.getLock(chainPathHash)
     t.ok(lock, 'lock created')
-    t.ok(lock instanceof bitcore.PublicKey, 'lock is a PublicKey')
+    t.ok(lock instanceof PublicKey, 'lock is a PublicKey')
 })
 
 test('checkSignature', function(t) {
     t.plan(2)
 
-    var verified = lockchain.checkSignature(message, signature, chainPathHashHex)
+    var verified = lockchain.checkSignature(message, signature, chainPathHash)
     t.ok(verified, 'signature was checked')
     t.equal(verified, true, 'signature is valid')
 })
