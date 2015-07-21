@@ -1,4 +1,4 @@
-# keylocker
+# Key-HQ
 
 A key system based around accounts that each have hierarchical deterministic keychains with ECDSA keypairs (the ones Bitcoin uses).
 
@@ -9,6 +9,11 @@ A keylocker is the highest level abstraction of keys. In a sense, it represents 
 Note that knowledge of the master key of a keychain derived from the keylocker does not provide knowledge of the master key of the keylocker.
 
 ```js
+var keyhq = require('key-hq'),
+    Keylocker = keyhq.Keylocker,
+    Keychain = keyhq.Keychain,
+    Lockchain = keyhq.Lockchain
+
 var keylocker = new Keylocker()
 ```
 

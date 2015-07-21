@@ -1,5 +1,5 @@
 {
-  "name": "keylocker",
+  "name": "key-hq",
   "version": "1.0.0",
   "description": "A key system based around accounts/keychains that each have hierarchical deterministic keychains with ECDSA keypairs (the ones Bitcoin uses).",
   "main": "index.js",
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/shea256/keylocker.git"
+    "url": "https://github.com/shea256/key-hq.git"
   },
   "keywords": [
     "key",
@@ -28,7 +28,7 @@
     "url": "https://twitter.com/ryaneshea"
   },
   "license": "MIT",
-  "homepage": "https://github.com/shea256/keylocker",
+  "homepage": "https://github.com/shea256/key-hq",
   "dependencies": {
     "bitcore": "^0.12.13",
     "bitcore-message": "^0.11.1",
