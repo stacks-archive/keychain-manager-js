@@ -8,7 +8,8 @@ var Keylocker = index.Keylocker,
     HDPrivateKey = index.HDPrivateKey,
     HDPublicKey = index.HDPublicKey,
     PrivateKey = index.PrivateKey,
-    PublicKey = index.PublicKey
+    PublicKey = index.PublicKey,
+    Address = index.Address
 
 /* keylocker Tests */
 
@@ -21,7 +22,8 @@ var keylocker = null,
     message = 'Hello, World!',
     signature = null,
     chainPathHash = null,
-    lock = null
+    lock = null,
+    address = null
 
 test('initKeylocker', function(t) {
     t.plan(3)
@@ -111,10 +113,26 @@ test('getLockFromLockchain', function(t) {
     t.ok(lock instanceof PublicKey, 'lock is a PublicKey')
 })
 
-test('checkSignature', function(t) {
+test('getAddressFromLockchain', function(t) {
     t.plan(2)
 
-    var verified = lockchain.checkSignature(message, signature, chainPathHash)
+    address = lockchain.getAddress(chainPathHash)
+    t.ok(address, 'address created')
+    t.ok(address instanceof Address, 'address is an Address')
+})
+
+test('signatureMatchesChainPath', function(t) {
+    t.plan(2)
+
+    var verified = lockchain.signatureMatchesChainPath(message, signature, chainPathHash)
+    t.ok(verified, 'signature was checked')
+    t.equal(verified, true, 'signature is valid')
+})
+
+test('signatureMatchesAddress', function(t) {
+    t.plan(2)
+
+    var verified = lockchain.signatureMatchesAddress(message, signature, address)
     t.ok(verified, 'signature was checked')
     t.equal(verified, true, 'signature is valid')
 })

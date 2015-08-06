@@ -48,5 +48,7 @@ Note that every lock (public key) in the lockchain can be traced back to the anc
 var lockchain = keychain.getLockchain()
 var lockchainFromKeylocker = keylocker.getLockchain(accountNumber)
 var lock = lockchain.getLock(chainPathHash)
-var verified = lockchain.checkSignature(message, signature, chainPathHash)
+var address = lockchain.getAddress(chainPathHash)
+var signatureVerified = lockchain.signatureMatchesChainPath(message, signature, chainPathHash)
+var signatureReverified = lockchain.signatureMatchesAddress(message, signature, address)
 ```

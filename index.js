@@ -7,6 +7,7 @@ var HDPrivateKey = bitcore.HDPrivateKey
 var HDPublicKey = bitcore.HDPublicKey
 var PublicKey = bitcore.PublicKey
 var PrivateKey = bitcore.PrivateKey
+var Address = bitcore.Address
 var sha256 = bitcore.crypto.Hash.sha256
 
 var Message = require('bitcore-message')
@@ -109,10 +110,17 @@ Lockchain.prototype.getLock = function(chainPathHash) {
     return lock
 }
 
-Lockchain.prototype.checkSignature = function(message, signature, chainPathHash) {
-    var lock = this.getLock(chainPathHash)
-    var address = lock.toAddress()
-    var messageVerified = Message(message).verify(address, signature)
+Lockchain.prototype.getAddress = function(chainPathHash) {
+    return this.getLock(chainPathHash).toAddress()
+}
+
+Lockchain.prototype.signatureMatchesAddress = function(message, signature, address) {
+    return Message(message).verify(address, signature)
+}
+
+Lockchain.prototype.signatureMatchesChainPath = function(message, signature, chainPathHash) {
+    var address = this.getAddress(chainPathHash)
+    var messageVerified = this.signatureMatchesAddress(message, signature, address)
     return messageVerified
 }
 
@@ -123,5 +131,6 @@ module.exports = {
     HDPrivateKey: HDPrivateKey,
     HDPublicKey: HDPublicKey,
     PrivateKey: PrivateKey,
-    PublicKey: PublicKey
+    PublicKey: PublicKey,
+    Address: Address
 }
