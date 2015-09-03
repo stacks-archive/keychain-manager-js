@@ -1,6 +1,6 @@
 {
   "name": "keychain-manager",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A key system based around accounts that each have hierarchical deterministic (HD) keychains with ECDSA public/private keypairs (the ones Bitcoin uses).",
   "main": "index.js",
   "scripts": {
@@ -27,9 +27,9 @@
     "bip32"
   ],
   "author": {
-    "name": "Ryan Shea",
-    "email": "ryan@shea.io",
-    "url": "https://twitter.com/ryaneshea"
+    "name": "Halfmoon Labs, Inc.",
+    "email": "hello@onename.com",
+    "url": "https://onename.com"
   },
   "license": "MIT",
   "homepage": "https://github.com/blockstack/keychain-manager",
