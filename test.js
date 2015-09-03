@@ -30,8 +30,8 @@ test('initKeychainGenerator', function(t) {
     
     keychainGenerator = new KeychainGenerator()
     t.ok(keychainGenerator, 'private keychain created')
-    t.ok(keychainGenerator.masterKeychain, 'private keychain master key created')
-    t.ok(keychainGenerator.masterKeychain instanceof HDPrivateKey, 'private keychain master key is an HDPrivateKey')
+    t.ok(keychainGenerator.rootKeychain, 'private keychain master key created')
+    t.ok(keychainGenerator.rootKeychain instanceof HDPrivateKey, 'private keychain master key is an HDPrivateKey')
 })
 
 test('initKeychainGeneratorFromSeed', function(t) {
@@ -40,9 +40,9 @@ test('initKeychainGeneratorFromSeed', function(t) {
     var privateKeyString = 'xprv9s21ZrQH143K4VRgygdbT9byKkWYJ5R73kNvFePJ7Hh7gA1Jic4NV4AnZmYs3fftKRdzMCHEaUFuYg7aApu99RDj9ZfA6KRXniK6r3VYRPV';
     keychainGenerator = new KeychainGenerator(privateKeyString)
     t.ok(keychainGenerator, 'private keychain created')
-    t.ok(keychainGenerator.masterKeychain, 'private keychain master key created')
-    t.equal(keychainGenerator.masterKeychain.toString(), privateKeyString, 'master key equal to master key seed')
-    t.ok(keychainGenerator.masterKeychain instanceof HDPrivateKey, 'master key is an HDPrivateKey')
+    t.ok(keychainGenerator.rootKeychain, 'private keychain master key created')
+    t.equal(keychainGenerator.toString(), privateKeyString, 'master key equal to master key seed')
+    t.ok(keychainGenerator.rootKeychain instanceof HDPrivateKey, 'master key is an HDPrivateKey')
 })
 
 test('createPrivateKeychain', function(t) {
@@ -50,8 +50,8 @@ test('createPrivateKeychain', function(t) {
 
     privateKeychain = keychainGenerator.getPrivateKeychain(accountNumber)
     t.ok(privateKeychain, 'private keychain created')
-    t.ok(privateKeychain.masterKeychain, 'private keychain master key created')    
-    t.ok(privateKeychain.masterKeychain instanceof HDPrivateKey)
+    t.ok(privateKeychain.rootKeychain, 'private keychain master key created')    
+    t.ok(privateKeychain.rootKeychain instanceof HDPrivateKey)
 })
 
 test('createPublicKeychainFromKeychainGenerator', function(t) {
@@ -59,8 +59,8 @@ test('createPublicKeychainFromKeychainGenerator', function(t) {
 
     publicKeychain = keychainGenerator.getPublicKeychain(accountNumber)
     t.ok(publicKeychain, 'public keychain created')
-    t.ok(publicKeychain.masterKeychain, 'public keychain master lock created')
-    t.ok(publicKeychain.masterKeychain instanceof HDPublicKey, 'public keychain master lock is an HDPublicKey')
+    t.ok(publicKeychain.rootKeychain, 'public keychain master lock created')
+    t.ok(publicKeychain.rootKeychain instanceof HDPublicKey, 'public keychain master lock is an HDPublicKey')
 })
 
 /* Private Keychain Tests */
@@ -70,10 +70,10 @@ test('createPublicKeychainFromPrivateKeychain', function(t) {
 
     var publicKeychain2 = privateKeychain.getPublicKeychain()
     t.ok(publicKeychain2, 'public keychain created')
-    t.ok(publicKeychain2.masterKeychain, 'public keychain master lock created')
-    t.ok(publicKeychain2.masterKeychain instanceof HDPublicKey, 'public keychain master lock is an HDPublicKey')
+    t.ok(publicKeychain2.rootKeychain, 'public keychain master lock created')
+    t.ok(publicKeychain2.rootKeychain instanceof HDPublicKey, 'public keychain master lock is an HDPublicKey')
 
-    t.equal(publicKeychain2.masterKeychain.toString(), publicKeychain.masterKeychain.toString(), 'public keychain master lock strings are equal')
+    t.equal(publicKeychain2.toString(), publicKeychain.toString(), 'public keychain master lock strings are equal')
 })
 
 test('getChainPathHash', function(t) {
@@ -119,14 +119,6 @@ test('getAddressFromPublicKeychain', function(t) {
     address = publicKeychain.getAddress(chainPathHash)
     t.ok(address, 'address created')
     t.ok(address instanceof Address, 'address is an Address')
-})
-
-test('signatureMatchesChainPath', function(t) {
-    t.plan(2)
-
-    var verified = publicKeychain.signatureMatchesChainPath(message, signature, chainPathHash)
-    t.ok(verified, 'signature was checked')
-    t.equal(verified, true, 'signature is valid')
 })
 
 test('signatureMatchesAddress', function(t) {

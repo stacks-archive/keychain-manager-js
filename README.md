@@ -52,8 +52,7 @@ Note that every private key in the keychain can be traced back to the ancestor k
 ```js
 var publicKey = publicKeychain.getPublicKey(chainPathHash),
     address = publicKeychain.getAddress(chainPathHash),
-    signatureVerified = publicKeychain.signatureMatchesChainPath(message, signature, chainPathHash),
-    signatureReverified = publicKeychain.signatureMatchesAddress(message, signature, address)
+    signatureVerified = publicKeychain.signatureMatchesAddress(message, signature, address)
 ```
 
 A public keychain is the public equivalent of a private keychain, where every public key has a corresponding private key in the corresponding keychain.

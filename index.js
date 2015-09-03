@@ -14,7 +14,7 @@ var sha256 = bitcore.crypto.Hash.sha256
 var KeychainGenerator = require('./lib/keychain-generator'),
     PrivateKeychain = require('./lib/private-keychain'),
     PublicKeychain = require('./lib/public-keychain'),
-    deriveChildKeychain = require('./lib/utils').deriveChildKeychain
+    deriveChildHDKey = require('./lib/utils').deriveChildHDKey
 
 module.exports = {
     KeychainGenerator: KeychainGenerator,
@@ -25,5 +25,5 @@ module.exports = {
     PrivateKey: PrivateKey,
     PublicKey: PublicKey,
     Address: Address,
-    deriveChildKeychain: deriveChildKeychain
+    deriveChildHDKey: deriveChildHDKey
 }
