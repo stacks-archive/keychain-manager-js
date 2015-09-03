@@ -1,15 +1,15 @@
-# Keychain HD
+# HD Keychain
 
 A key system based around accounts that each have hierarchical deterministic (HD) keychains with ECDSA keypairs (the ones Bitcoin uses).
 
 ### Getting started
 
 ```
-$ npm install keychain-hd
+$ npm install hd-keychain
 ```
 
 ```js
-var keychainHD = require('keychain-hd'),
+var keychainHD = require('hd-keychain'),
     KeychainGenerator = keychainHD.KeychainGenerator,
     PrivateKeychain = keychainHD.PrivateKeychain,
     PublicKeychain = keychainHD.PublicKeychain

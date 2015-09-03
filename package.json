@@ -1,6 +1,6 @@
 {
   "name": "hd-keychain",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "A key system based around accounts that each have hierarchical deterministic (HD) keychains with ECDSA public/private keypairs (the ones Bitcoin uses).",
   "main": "index.js",
   "scripts": {
