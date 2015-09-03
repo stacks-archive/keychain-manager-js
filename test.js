@@ -2,9 +2,9 @@
 
 var test = require('tape')
 var index = require('./index')
-var Keylocker = index.Keylocker,
-    Keychain = index.Keychain,
-    Lockchain = index.Lockchain,
+var KeychainGenerator = index.KeychainGenerator,
+    PrivateKeychain = index.PrivateKeychain,
+    PublicKeychain = index.PublicKeychain,
     HDPrivateKey = index.HDPrivateKey,
     HDPublicKey = index.HDPublicKey,
     PrivateKey = index.PrivateKey,
@@ -13,73 +13,73 @@ var Keylocker = index.Keylocker,
 
 /* keylocker Tests */
 
-var keylocker = null,
-    keychain = null,
-    lockchain = null,
+var keychainGenerator = null,
+    privateKeychain = null,
+    publicKeychain = null,
     accountNumber = 0,
     keyName = 'blockstack.org',
     key = null,
     message = 'Hello, World!',
     signature = null,
     chainPathHash = null,
-    lock = null,
+    publicKey = null,
     address = null
 
-test('initKeylocker', function(t) {
+test('initKeychainGenerator', function(t) {
     t.plan(3)
     
-    keylocker = new Keylocker()
-    t.ok(keylocker, 'keychain box created')
-    t.ok(keylocker.masterKey, 'keychain box master key created')
-    t.ok(keylocker.masterKey instanceof HDPrivateKey, 'keychain box master key is an HDPrivateKey')
+    keychainGenerator = new KeychainGenerator()
+    t.ok(keychainGenerator, 'private keychain created')
+    t.ok(keychainGenerator.masterKeychain, 'private keychain master key created')
+    t.ok(keychainGenerator.masterKeychain instanceof HDPrivateKey, 'private keychain master key is an HDPrivateKey')
 })
 
-test('initkeylockerFromSeed', function(t) {
+test('initKeychainGeneratorFromSeed', function(t) {
     t.plan(4)
     
     var privateKeyString = 'xprv9s21ZrQH143K4VRgygdbT9byKkWYJ5R73kNvFePJ7Hh7gA1Jic4NV4AnZmYs3fftKRdzMCHEaUFuYg7aApu99RDj9ZfA6KRXniK6r3VYRPV';
-    keylocker = new Keylocker(privateKeyString)
-    t.ok(keylocker, 'keychain box created')
-    t.ok(keylocker.masterKey, 'keychain box master key created')
-    t.equal(keylocker.masterKey.toString(), privateKeyString, 'master key equal to master key seed')
-    t.ok(keylocker.masterKey instanceof HDPrivateKey, 'master key is an HDPrivateKey')
+    keychainGenerator = new KeychainGenerator(privateKeyString)
+    t.ok(keychainGenerator, 'private keychain created')
+    t.ok(keychainGenerator.masterKeychain, 'private keychain master key created')
+    t.equal(keychainGenerator.masterKeychain.toString(), privateKeyString, 'master key equal to master key seed')
+    t.ok(keychainGenerator.masterKeychain instanceof HDPrivateKey, 'master key is an HDPrivateKey')
 })
 
-test('createKeychain', function(t) {
+test('createPrivateKeychain', function(t) {
     t.plan(3)
 
-    keychain = keylocker.getKeychain(accountNumber)
-    t.ok(keychain, 'keychain created')
-    t.ok(keychain.masterKey, 'keychain master key created')    
-    t.ok(keychain.masterKey instanceof HDPrivateKey)
+    privateKeychain = keychainGenerator.getPrivateKeychain(accountNumber)
+    t.ok(privateKeychain, 'private keychain created')
+    t.ok(privateKeychain.masterKeychain, 'private keychain master key created')    
+    t.ok(privateKeychain.masterKeychain instanceof HDPrivateKey)
 })
 
-test('createLockchainFromkeylocker', function(t) {
+test('createPublicKeychainFromKeychainGenerator', function(t) {
     t.plan(3)
 
-    lockchain = keylocker.getLockchain(accountNumber)
-    t.ok(lockchain, 'lockchain created')
-    t.ok(lockchain.masterLock, 'lockchain master lock created')
-    t.ok(lockchain.masterLock instanceof HDPublicKey, 'lockchain master lock is an HDPublicKey')
+    publicKeychain = keychainGenerator.getPublicKeychain(accountNumber)
+    t.ok(publicKeychain, 'public keychain created')
+    t.ok(publicKeychain.masterKeychain, 'public keychain master lock created')
+    t.ok(publicKeychain.masterKeychain instanceof HDPublicKey, 'public keychain master lock is an HDPublicKey')
 })
 
-/* Keychain Tests */
+/* Private Keychain Tests */
 
-test('createLockchainFromKeychain', function(t) {
+test('createPublicKeychainFromPrivateKeychain', function(t) {
     t.plan(4)
 
-    var lockchain2 = keychain.getLockchain()
-    t.ok(lockchain2, 'lockchain created')
-    t.ok(lockchain2.masterLock, 'lockchain master lock created')
-    t.ok(lockchain2.masterLock instanceof HDPublicKey, 'lockchain master lock is an HDPublicKey')
+    var publicKeychain2 = privateKeychain.getPublicKeychain()
+    t.ok(publicKeychain2, 'public keychain created')
+    t.ok(publicKeychain2.masterKeychain, 'public keychain master lock created')
+    t.ok(publicKeychain2.masterKeychain instanceof HDPublicKey, 'public keychain master lock is an HDPublicKey')
 
-    t.equal(lockchain2.masterLock.toString(), lockchain.masterLock.toString(), 'lockchain master lock strings are equal')
+    t.equal(publicKeychain2.masterKeychain.toString(), publicKeychain.masterKeychain.toString(), 'public keychain master lock strings are equal')
 })
 
 test('getChainPathHash', function(t) {
     t.plan(2)
 
-    chainPathHash = keychain.getChainPathHash(keyName)
+    chainPathHash = privateKeychain.getChainPathHash(keyName)
 
     t.ok(chainPathHash, 'chain path hash created')
     t.ok(typeof chainPathHash === 'string', 'chain path hash is a string')
@@ -88,7 +88,7 @@ test('getChainPathHash', function(t) {
 test('getKey', function(t) {
     t.plan(3)
 
-    key = keychain.getKey(keyName)
+    key = privateKeychain.getPrivateKey(chainPathHash)
     t.ok(key, 'key acquired')
     t.ok(key instanceof PrivateKey, 'key is a PrivateKey object')
     t.ok(key.toString(), 'key can be converted to a string')
@@ -97,26 +97,26 @@ test('getKey', function(t) {
 test('signWithKey', function(t) {
     t.plan(2)
 
-    signature = keychain.signWithKey(keyName, message)
+    signature = privateKeychain.signWithKey(key, message)
     t.ok(signature, 'signature created')
     t.ok(typeof signature === 'string', 'signature is a string')
 })
 
 
-/* Lockchain Tests */
+/* Public Keychain Tests */
 
-test('getLockFromLockchain', function(t) {
+test('getPublicKeyFromPublicKeychain', function(t) {
     t.plan(2)
 
-    lock = lockchain.getLock(chainPathHash)
-    t.ok(lock, 'lock created')
-    t.ok(lock instanceof PublicKey, 'lock is a PublicKey')
+    publicKey = publicKeychain.getPublicKey(chainPathHash)
+    t.ok(publicKey, 'public key created')
+    t.ok(publicKey instanceof PublicKey, 'public key is a PublicKey')
 })
 
-test('getAddressFromLockchain', function(t) {
+test('getAddressFromPublicKeychain', function(t) {
     t.plan(2)
 
-    address = lockchain.getAddress(chainPathHash)
+    address = publicKeychain.getAddress(chainPathHash)
     t.ok(address, 'address created')
     t.ok(address instanceof Address, 'address is an Address')
 })
@@ -124,7 +124,7 @@ test('getAddressFromLockchain', function(t) {
 test('signatureMatchesChainPath', function(t) {
     t.plan(2)
 
-    var verified = lockchain.signatureMatchesChainPath(message, signature, chainPathHash)
+    var verified = publicKeychain.signatureMatchesChainPath(message, signature, chainPathHash)
     t.ok(verified, 'signature was checked')
     t.equal(verified, true, 'signature is valid')
 })
@@ -132,7 +132,7 @@ test('signatureMatchesChainPath', function(t) {
 test('signatureMatchesAddress', function(t) {
     t.plan(2)
 
-    var verified = lockchain.signatureMatchesAddress(message, signature, address)
+    var verified = publicKeychain.signatureMatchesAddress(message, signature, address)
     t.ok(verified, 'signature was checked')
     t.equal(verified, true, 'signature is valid')
 })
