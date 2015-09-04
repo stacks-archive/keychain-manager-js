@@ -19,6 +19,7 @@ var keychainManager = require('keychain-manager'),
 
 ```js
 var keychainGenerator = new KeychainGenerator(),
+    accountNumber = 0,
     privateKeychain = keychainGenerator.getPrivateKeychain(accountNumber),
     publicKeychain = keychainGenerator.getPublicKeychain(accountNumber)
 ```
@@ -31,8 +32,7 @@ Note that knowledge of the master private key of a keychain derived from the key
 ### Private Keychain
 
 ```js
-var accountNumber = 0,
-    keyName = 'blockstack.org',
+var keyName = 'blockstack.org',
     message = 'Hello, World!'
 
 var chainPathHash = privateKeychain.getChainPathHash(keyName),
