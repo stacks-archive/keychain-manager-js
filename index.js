@@ -13,6 +13,6 @@ module.exports = {
     PublicKey: bitcore.PublicKey,
     Address: bitcore.Address,
     deriveHDKeychain: utils.deriveHDKeychain,
-    deriveKeychainString: utils.deriveKeychainString,
-    sha256: bitcore.crypto.Hash.sha256
+    deriveChildPrivateKey: utils.deriveChildPrivateKey,
+    deriveChildPublicKey: utils.deriveChildPublicKey
 }

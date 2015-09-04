@@ -9,7 +9,9 @@ var KeychainGenerator = index.KeychainGenerator,
     HDPublicKey = index.HDPublicKey,
     PrivateKey = index.PrivateKey,
     PublicKey = index.PublicKey,
-    Address = index.Address
+    Address = index.Address,
+    deriveChildPrivateKey = index.deriveChildPrivateKey,
+    deriveChildPublicKey = index.deriveChildPublicKey
 
 /* keylocker Tests */
 
@@ -127,4 +129,24 @@ test('signatureMatchesAddress', function(t) {
     var verified = publicKeychain.signatureMatchesAddress(message, signature, address)
     t.ok(verified, 'signature was checked')
     t.equal(verified, true, 'signature is valid')
+})
+
+test('deriveChildPrivateKey', function(t) {
+    t.plan(2)
+    var privateKeychain = 'xprv9s21ZrQH143K2vRPJpXPhcT12MDpL3rofvjagwKn4yZpPPFpgWn1cy1Wwp3pk78wfHSLcdyZhmEBQsZ29ZwFyTQhhkVVa9QgdTC7hGMB1br',
+        referencePrivateKeyHex = '278a5de700e29faae8e40e366ec5012b5ec63d36ec77e8a2417154cc1d25383f',
+        chainPathHash = 'bd62885ec3f0e3838043115f4ce25eedd22cc86711803fb0c19601eeef185e39',
+        childPrivateKey = deriveChildPrivateKey(privateKeychain, chainPathHash)
+    t.ok(childPrivateKey, 'child private key was derived')
+    t.equal(childPrivateKey, referencePrivateKeyHex, 'child private key matches the reference value')
+})
+
+test('deriveChildPublicKey', function(t) {
+    t.plan(2)
+    var publicKeychain = 'xpub661MyMwAqRbcFQVrQr4Q4kPjaP4JjWaf39fBVKjPdK6oGBayE46GAmKzo5UDPQdLSM9DufZiP8eauy56XNuHicBySvZp7J5wsyQVpi2axzZ',
+        referencePublicKeyHex = '03fdd57adec3d438ea237fe46b33ee1e016eda6b585c3e27ea66686c2ea5358479',
+        chainPathHash = 'bd62885ec3f0e3838043115f4ce25eedd22cc86711803fb0c19601eeef185e39',
+        childPublicKey = deriveChildPublicKey(publicKeychain, chainPathHash)
+    t.ok(childPublicKey, 'child public key was derived')
+    t.equal(childPublicKey, referencePublicKeyHex, 'child public key matches the reference value')
 })
