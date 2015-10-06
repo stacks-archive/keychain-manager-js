@@ -15,43 +15,75 @@ var PrivateKeychain = require('keychain-manager').PrivateKeychain,
 
 ### Private Keychain
 
-```js
-var masterPrivateKeychain = new PrivateKeychain()
-
-var accountNumber = 0,
-    accountPrivateKeychain = masterPrivateKeychain.account(accountNumber),
-    accountPublicKeychain = accountPrivateKeychain.publicKeychain(),
-
-var childNumber = 2,
-    childPrivateKeychain = masterPrivateKeychain.child(childNumber)
-```
-
-A master private keychain is the highest level abstraction of keys. It represents the root or master private key for the application and/or device. Account-specific private keychains can be derived from it, which can then be used to derive account-specific public keychains.
-
-Note that knowledge of the master private key of an account keychain derived from the master private keychain does not provide knowledge of the key of the master keychain.
+First, create a master private keychain, which represents the root or master private key for an application and/or device. Account-specific private keys can be derived from it, which can then be used to derive account-specific public keychains.
 
 ```js
-var childKeyName = 'blockstack.org'
-
-var chainPathHash = accountPrivateKeychain.secretHash(childKeyName),
-    privateKey = accountPrivateKeychain.descendant(chainPathHash).privateKey()
+> var masterPrivateKeychain = new PrivateKeychain()
+> masterPrivateKeychain.toString()
+'xprv9s21ZrQH143K3puYL6fQ9N43ZuSDpUtf9ax1Kg5TD8J5pPziJnZgjtAaJffZMCVejtaizxdnptbBW794o5bphUZufTt5SpNCowdV19o6vLm'
 ```
 
-A private keychain is a collection of private keys with a chain-specific master key or "ancestor" key that helps derive all of the child keys.
+Next, derive an account-level private keychain from the master private keychain.
 
-An account private keychain is derived from a master private keychain through hardening in the key derivation process. A child private keychain, meanwhile uses hardened key derivation. It is recommended that one use at least one level of accounts derived from the master private keychain. This adds a nice capability where an entirely new keychain can be issued if the master key of a particular keychain is ever compromised.
+Note that this derivation process uses hardening of hierarchical deterministic keys. This means that knowledge of an account private keychain derived from the master private keychain does not provide knowledge of the master keychain.
 
-Note that every child private key in a keychain can be traced back to the ancestor key in the chain. That said, with a chain path with enough entropy, it would be intractable to brute-force the path from the child private key to the ancestor private key.
+```js
+> var accountPrivateKeychain = masterPrivateKeychain.account(accountNumber)
+> accountPrivateKeychain.toString()
+'xprv9uCwWmgt46hTx1u7YnrQHLtoArGLSwaoXUvF2gP2gmdoSkuW37AykJmR5b1szgjBgT8ZFhcp8uR1eyvg1mugitTDZtTG55cLWfgaj1GjQ7c'
+```
+
+Now use that account private keychain to derive an account public keychain.
+
+```js
+> var accountPublicKeychain = accountPrivateKeychain.publicKeychain()
+> accountPublicKeychain.toString()
+'xpub68CHvHDmtUFmAVyaepPQeUqXit6prQJethqqq4neF7AnKZEeaeVEJ75tvpwmKWahGfthh1BGBjr3GRfezEZ4DQvA3g8nY6cnjro3G84EucB'
+```
+
+Next, create a descendant private key from the account private keychain, which is essentially the private key of a keychain that has undergone many steps of unhardened derivation.
+
+Descendant keys preserve privacy in that knowledge of the account public keychain does not lead to knowledge of the descendant keys. This is because even though they don't use hardening, the derivation process involves approximately 256 bits of derivation, which makes it intractable to brute-force the path from the descendant public key to the ancestor public key.
+
+```js
+> chainPathHash = accountPrivateKeychain.secretHash('blockstack.org')
+'548a2bed67ab915af478d616b169992fa1716a7cef058ef4f979ece35c01e0f5'
+> var privateKey = accountPrivateKeychain.descendant(chainPathHash).privateKey()
+> privateKey.toString()
+'79a4df0a669f00b5525104f31a84d9930f45449ddc8a4ef5786caff31a83c8c2'
+```
+
+Alternatively, if you don't want to use descendant keys, you can work with standard unhardened child keys. Just keep in mind they don't preserve privacy in the same way.
+
+```js
+> var childNumber = 2
+> var childPrivateKeychain = accountPrivateKeychain.child(childNumber)
+> childPrivateKeychain.toString()
+'xprv9wHk2g4f6AM8CBvb2NSLavSnSFvwu5nBzijwBfG65qj7DhzuDQkuMM6xuhwi39MkT13JDYsSCEtdHw74xpVnFVBZQK3zgygtsWfWuTasw6v'
+```
 
 ### Public Keychain
 
+Create a descendant public key from the account public keychain. Use the chain path hash from before.
+
 ```js
-var publicKey = publicKeychain.publicKey(),
-    address = publicKeychain.address(),
-    chainPathHash = 'bd62885ec3f0e3838043115f4ce25eedd22cc86711803fb0c19601eeef185e39',
-    descendantPublicKey = publicKeychain.decendant(chainPathHash).publicKey()
+> var chainPathHash = '548a2bed67ab915af478d616b169992fa1716a7cef058ef4f979ece35c01e0f5'
+> var descendantPublicKey = accountPublicKeychain.descendant(chainPathHash).publicKey()
+> descendantPublicKey.toString()
+'03630ebc01c59b09f47be418c694a6136c9bfa6db5cfd55a6628fd1165489ae672'
 ```
 
-A public keychain is the public equivalent of a private keychain, where every public key has a corresponding private key in the corresponding keychain.
+Verify that the descendant public key derived here matches the public key of the descendant private key derived earlier.
 
-Note that every child public key in the public keychain can be traced back to the ancestor public key in the chain. But again, if the chain path is random and long enough, it would be intractable to brute-force the path from the child public key to the ancestor public key.
+```js
+> privateKey.publicKey.toString()
+'03630ebc01c59b09f47be418c694a6136c9bfa6db5cfd55a6628fd1165489ae672'
+```
+
+Alternatively, if you don't want to use descendant public keys, you can work with one-off unhardened child public keys. Just keep in mind they don't preserve privacy in the same way that descendant public keys do.
+
+```js
+> var childPublicKeychain = accountPublicKeychain.child(childNumber)
+> childPublicKeychain.toString()
+'xpub6AH6SBbYvXuRQg148PyLx4PWzHmSJYW3MwfXz3fheBG66WL3kx59u9RSkzHdfdtPbVZFSoFnpNLejHY4r8hyzHnnmbc3AhPG4TM5P3Tmi4P'
+```
