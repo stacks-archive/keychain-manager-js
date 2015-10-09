@@ -72,7 +72,7 @@ function testPrivateKeychain() {
 
         var childPrivateKey = childPrivateKeychain.privateKey()
         t.ok(childPrivateKey, 'child private key created')
-        t.equal(typeof childPrivateKey, 'string', 'child private key is a String')
+        t.ok(childPrivateKey instanceof PrivateKey, 'child private key is a PrivateKey')
     })
 
     test('descendant', function(t) {
@@ -130,7 +130,7 @@ function testPublicKeychain() {
 
         var publicKey = accountPublicKeychain.publicKey()
         t.ok(publicKey, 'public key created')
-        t.equal(typeof publicKey, 'string', 'public key is a String')
+        t.ok(publicKey instanceof PublicKey, 'public key is a PublicKey')
     })
 
     test('address', function(t) {
@@ -138,7 +138,7 @@ function testPublicKeychain() {
 
         var address = accountPublicKeychain.address()
         t.ok(address, 'address created')
-        t.equal(typeof address, 'string', 'address is an Address')
+        t.ok(address instanceof Address, 'address is an Address')
     })
 }
 
