@@ -1,6 +1,6 @@
 {
   "name": "keychain-manager",
-  "version": "1.1.2",
+  "version": "1.2.0",
   "description": "A key system based around accounts that each have hierarchical deterministic (HD) keychains with ECDSA public/private keypairs (the ones Bitcoin uses).",
   "main": "index.js",
   "scripts": {
