@@ -1,6 +1,6 @@
 # Keychain Manager
 
-[![CircleCI](https://img.shields.io/circleci/project/blockstack/keychain-manager-js.svg)](https://circleci.com/gh/blockstack/keychain-manager-js)
+[![CircleCI](https://img.shields.io/circleci/project/blockstack/keychain-manager-js/master.svg)](https://circleci.com/gh/blockstack/keychain-manager-js/tree/master)
 [![npm](https://img.shields.io/npm/l/keychain-manager.svg)](https://www.npmjs.com/package/keychain-manager)
 [![npm](https://img.shields.io/npm/v/keychain-manager.svg)](https://www.npmjs.com/package/keychain-manager)
 [![npm](https://img.shields.io/npm/dm/keychain-manager.svg)](https://www.npmjs.com/package/keychain-manager)
